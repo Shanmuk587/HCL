@@ -1,51 +1,82 @@
 import React, { useState } from 'react';
-import DatePicker from 'react-datepicker'; // Corrected import
-import 'react-datepicker/dist/react-datepicker.css'; 
+import { Calendar, Trash2 } from 'lucide-react';
 
-const ParticipantList = () => {
+const ParticipantsTable = () => {
   const [participants, setParticipants] = useState([
-    { id: 1, name: 'John Doe', scheduledDate: null },
-    { id: 2, name: 'Jane Smith', scheduledDate: null },
-    { id: 3, name: 'Tom Johnson', scheduledDate: null },
+    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'unscheduled' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'scheduled' },
+    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', status: 'unscheduled' },
   ]);
+
+  const handleSchedule = (id) => {
+    setParticipants(participants.map(participant => 
+      participant.id === id 
+        ? { ...participant, status: 'scheduled' }
+        : participant
+    ));
+  };
 
   const handleDelete = (id) => {
     setParticipants(participants.filter(participant => participant.id !== id));
   };
 
-  const handleSchedule = (id, date) => {
-    setParticipants(participants.map(participant =>
-      participant.id === id ? { ...participant, scheduledDate: date } : participant
-    ));
-  };
-
   return (
-    <div>
-      <h3>Participants</h3>
-      <ul>
-        {participants.map(participant => (
-          <li key={participant.id} style={{ marginBottom: '20px' }}>
-            <span>{participant.name}</span>
-            <button onClick={() => handleDelete(participant.id)} style={{ marginLeft: '10px' }}>Delete</button>
-            <button onClick={() => handleSchedule(participant.id, new Date())} style={{ marginLeft: '10px' }}>
-              Schedule
-            </button>
-            {participant.scheduledDate && (
-              <p>Scheduled for: {participant.scheduledDate.toLocaleDateString()}</p>
-            )}
-            <DatePicker
-              selected={participant.scheduledDate}
-              onChange={(date) => handleSchedule(participant.id, date)}
-              dateFormat="MMMM d, yyyy"
-              showPopperArrow={false}
-              minDate={new Date()}
-              placeholderText="Select a date"
-            />
-          </li>
-        ))}
-      </ul>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Participants List</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-white rounded-lg shadow">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-4 text-left border-b">Participant's Name</th>
+              <th className="p-4 text-left border-b">Email</th>
+              <th className="p-4 text-left border-b">Status</th>
+              <th className="p-4 text-left border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {participants.map((participant) => (
+              <tr key={participant.id} className="border-b hover:bg-gray-50">
+                <td className="p-4">{participant.name}</td>
+                <td className="p-4">{participant.email}</td>
+                <td className="p-4">
+                  <span className={`px-2 py-1 rounded-full text-sm ${
+                    participant.status === 'scheduled' 
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {participant.status}
+                  </span>
+                </td>
+                <td className="p-4">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleSchedule(participant.id)}
+                      disabled={participant.status === 'scheduled'}
+                      className={`flex items-center gap-1 px-3 py-1 rounded-md ${
+                        participant.status === 'scheduled'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      }`}
+                    >
+                      <Calendar size={16} />
+                      Schedule
+                    </button>
+                    <button
+                      onClick={() => handleDelete(participant.id)}
+                      className="flex items-center gap-1 px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-600"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default ParticipantList;
+export default ParticipantsTable;

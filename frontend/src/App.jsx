@@ -10,7 +10,6 @@ function App() {
   return (
     <Router>
       <div>
-        <Header />
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -19,7 +18,6 @@ function App() {
             <Route path="/allparticipants" element={<ParticipantList />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );
